@@ -1,0 +1,15 @@
+---
+title: "Final STAT 455 Project"
+output: html_document
+authors: Jackie Blake, Jack Morrissey, and Sandesh Joshi
+date: "2023-04-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+Practice commit
+```
