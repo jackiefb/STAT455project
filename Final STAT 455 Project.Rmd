@@ -1,8 +1,8 @@
 ---
-title: "Final STAT 455 Project"
-output: html_document
-authors: Jackie Blake, Jack Morrissey, and Sandesh Joshi
-date: "2023-04-24"
+title: "Final STAT 455 Project Data Visualization"
+output: pdf_document
+author: Sandesh Joshi, Jack Morissey, Jackie Blake
+date: "2023-05-03"
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +10,231 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-
-Practice commit
+library(knitr) 
+library(gridExtra)
+library(GGally)
+library(kableExtra)
+library(jtools)
+library(rsample)
+library(broom)
+library(tidyverse)    
+library(ggplot2)
 ```
+
+```{r}
+sports_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-03-29/sports.csv')
+population_state_data <- readr::read_csv('https://www2.census.gov/programs-surveys/popest/datasets/2010-2020/state/totals/nst-est2020-alldata.csv')
+state_abbr <- readr::read_csv('http://www.fonz.net/blog/wp-content/uploads/2008/04/states.csv')
+summary(sports_data)
+```
+
+```{r}
+population_state_data <- population_state_data %>%
+  rename(State = NAME) 
+population_state_data
+```
+
+
+
+
+```{r}
+population_state_2015 <- population_state_data %>%
+  select(State, POPESTIMATE2015, POPESTIMATE2016, POPESTIMATE2017, POPESTIMATE2018) 
+population_state_2015  
+```
+
+```{r}
+state_data_pop <- left_join(state_abbr,population_state_2015, by = "State" )
+state_data_pop
+```
+
+```{r}
+state_data_pop <- state_data_pop%>%
+  rename(state_cd = Abbreviation)
+state_data_pop
+```
+
+
+```{r}
+sports_basketball_2015 <- sports_data %>%
+  select(state_cd, city_txt, sports, rev_women, rev_men, exp_men, exp_women, year) %>%
+  group_by(state_cd) %>%
+  filter(sports == "Basketball" & year == "2015") %>%
+  summarize(avg_exp_men = mean(exp_men, na.rm = TRUE),
+            avg_exp_women = mean(exp_women, na.rm = TRUE),
+            avg_rev_men = mean(rev_men, na.rm = TRUE),
+            avg_rev_women = mean(rev_women, na.rm = TRUE)) %>%
+  mutate(ROI_men = (((avg_rev_men - avg_exp_men)/avg_exp_men)* 100),
+         ROI_women = (((avg_rev_women - avg_exp_women)/avg_exp_women)* 100))
+sports_basketball_2015
+```
+
+```{r}
+sports_basketball_2016 <- sports_data %>%
+  select(state_cd, city_txt, sports, rev_women, rev_men, exp_men, exp_women, year) %>%
+  group_by(state_cd) %>%
+  filter(sports == "Basketball" & year == "2016") %>%
+  summarize(avg_exp_men = mean(exp_men, na.rm = TRUE),
+            avg_exp_women = mean(exp_women, na.rm = TRUE),
+            avg_rev_men = mean(rev_men, na.rm = TRUE),
+            avg_rev_women = mean(rev_women, na.rm = TRUE)) %>%
+  mutate(ROI_men = (((avg_rev_men - avg_exp_men)/avg_exp_men)* 100),
+         ROI_women = (((avg_rev_women - avg_exp_women)/avg_exp_women)* 100))
+sports_basketball_2016
+```
+
+```{r}
+sports_basketball_2017 <- sports_data %>%
+  select(state_cd, city_txt, sports, rev_women, rev_men, exp_men, exp_women, year) %>%
+  group_by(state_cd) %>%
+  filter(sports == "Basketball" & year == "2017") %>%
+  summarize(avg_exp_men = mean(exp_men, na.rm = TRUE),
+            avg_exp_women = mean(exp_women, na.rm = TRUE),
+            avg_rev_men = mean(rev_men, na.rm = TRUE),
+            avg_rev_women = mean(rev_women, na.rm = TRUE)) %>%
+  mutate(ROI_men = (((avg_rev_men - avg_exp_men)/avg_exp_men)* 100),
+         ROI_women = (((avg_rev_women - avg_exp_women)/avg_exp_women)* 100))
+sports_basketball_2017
+```
+
+```{r}
+sports_basketball_2018 <- sports_data %>%
+  select(state_cd, city_txt, sports, rev_women, rev_men, exp_men, exp_women, year) %>%
+  group_by(state_cd) %>%
+  filter(sports == "Basketball" & year == "2018") %>%
+  summarize(avg_exp_men = mean(exp_men, na.rm = TRUE),
+            avg_exp_women = mean(exp_women, na.rm = TRUE),
+            avg_rev_men = mean(rev_men, na.rm = TRUE),
+            avg_rev_women = mean(rev_women, na.rm = TRUE)) %>%
+  mutate(ROI_men = (((avg_rev_men - avg_exp_men)/avg_exp_men)* 100),
+         ROI_women = (((avg_rev_women - avg_exp_women)/avg_exp_women)* 100))
+sports_basketball_2018
+```
+
+
+```{r}
+state_basketball_pop_full <-  right_join(sports_basketball_2015, state_data_pop) 
+state_basketball_pop_2015 <- state_basketball_pop_full %>%
+  select(state_cd, State, ROI_men, ROI_women, POPESTIMATE2015)
+state_basketball_pop_2015
+```
+```{r}
+summary(state_basketball_pop_2015)
+```
+
+
+```{r}
+state_basketball_pop_full <-  right_join(sports_basketball_2016, state_data_pop) 
+state_basketball_pop_2016 <- state_basketball_pop_full %>%
+  select(state_cd, State, ROI_men, ROI_women, POPESTIMATE2016)
+state_basketball_pop_2016
+```
+
+```{r}
+summary(state_basketball_pop_2016)
+```
+
+
+```{r}
+state_basketball_pop_full <-  right_join(sports_basketball_2017, state_data_pop) 
+state_basketball_pop_2017 <- state_basketball_pop_full %>%
+  select(state_cd, State, ROI_men, ROI_women, POPESTIMATE2017)
+state_basketball_pop_2017
+```
+
+```{r}
+summary(state_basketball_pop_2017)
+```
+
+```{r}
+state_basketball_pop_full_2018 <-  right_join(sports_basketball_2018, state_data_pop) 
+state_basketball_pop_2018 <- state_basketball_pop_full_2018 %>%
+  select(state_cd, State, ROI_men, ROI_women, POPESTIMATE2018)
+state_basketball_pop_2018
+```
+
+```{r}
+summary(state_basketball_pop_2018)
+```
+
+
+```{r}
+roi_men_2015 <- ggplot(data = state_basketball_pop_2015, 
+    aes( y = ROI_men)) + 
+  geom_boxplot() + coord_flip()  + ylab("Mean ROI for Mens College Basketball in 2015") + 
+  xlab("") + labs(title="(a)")
+roi_women_2015 <- ggplot(data = state_basketball_pop_2015, 
+    aes(y = ROI_women)) + 
+  geom_boxplot() + coord_flip() + ylab("Mean ROI for Womens College Basketball in 2015") + 
+  xlab("") + labs(title="(b)")
+roi_men_2016 <- ggplot(data = state_basketball_pop_2016, 
+    aes( y = ROI_men)) + 
+  geom_boxplot() + coord_flip()  + ylab("Mean ROI for Mens College Basketball in 2016") + 
+  xlab("") + labs(title="(c)")
+roi_women_2016 <- ggplot(data = state_basketball_pop_2016, 
+    aes(y = ROI_women)) + 
+  geom_boxplot() + coord_flip() + ylab("Mean ROI for Womens College Basketball in 2016") + 
+  xlab("") + labs(title="(d)")
+roi_men_2017 <- ggplot(data = state_basketball_pop_2017, 
+    aes( y = ROI_men)) + 
+  geom_boxplot() + coord_flip()  + ylab("Mean ROI for Mens College Basketball in 2017") + 
+  xlab("") + labs(title="(e)")
+roi_women_2017 <- ggplot(data = state_basketball_pop_2017, 
+    aes(y = ROI_women)) + 
+  geom_boxplot() + coord_flip() + ylab("Mean ROI for Womens College Basketball in 2017") + 
+  xlab("") + labs(title="(f)")
+roi_men_2018 <- ggplot(data = state_basketball_pop_2018, 
+    aes( y = ROI_men)) + 
+  geom_boxplot() + coord_flip()  + ylab("Mean ROI for Mens College Basketball in 2018") + 
+  xlab("") + labs(title="(g)")
+roi_women_2018 <- ggplot(data = state_basketball_pop_2018, 
+    aes(y = ROI_women)) + 
+  geom_boxplot() + coord_flip() + ylab("Mean ROI for Womens College Basketball in 2018") + 
+  xlab("") + labs(title="(h)")
+grid.arrange(roi_men_2015, roi_women_2015,roi_men_2016, roi_women_2016,roi_men_2017, roi_women_2017,roi_men_2018, roi_women_2018,ncol=2,nrow=4)
+```
+
+
+```{r}
+pop2018_tidy <- gather(state_basketball_pop_2018, ROI_type, ROI_value, ROI_men, ROI_women)
+```
+
+```{r}
+pop2017_tidy <- gather(state_basketball_pop_2015, ROI_type, ROI_value, ROI_men, ROI_women)
+```
+
+
+```{r}
+pop2016_tidy <- gather(state_basketball_pop_2015, ROI_type, ROI_value, ROI_men, ROI_women)
+```
+
+
+```{r}
+pop2015_tidy <- gather(state_basketball_pop_2015, ROI_type, ROI_value, ROI_men, ROI_women)
+```
+
+```{r}
+roi_2015 <- ggplot(pop2015_tidy, aes(x = state_cd, y = ROI_value, fill = ROI_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "State", y = "ROI", fill = "Gender") +
+  ggtitle("ROI for Men and Women by State in 2015") +
+  theme(plot.title = element_text(hjust = 0.5))
+roi_2016 <- ggplot(pop2016_tidy, aes(x = state_cd, y = ROI_value, fill = ROI_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "State", y = "ROI", fill = "Gender") +
+  ggtitle("ROI for Men and Women by State in 2016") +
+  theme(plot.title = element_text(hjust = 0.5))
+roi_2017 <- ggplot(pop2017_tidy, aes(x = state_cd, y = ROI_value, fill = ROI_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "State", y = "ROI", fill = "Gender") +
+  ggtitle("ROI for Men and Women by State in 2017") +
+  theme(plot.title = element_text(hjust = 0.5))
+roi_2018 <- ggplot(pop2018_tidy, aes(x = state_cd, y = ROI_value, fill = ROI_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "State", y = "ROI", fill = "Gender") +
+  ggtitle("ROI for Men and Women by State in 2018") +
+  theme(plot.title = element_text(hjust = 0.5))
+grid.arrange(roi_2015, roi_2016, roi_2017, roi_2018, ncol=2,nrow=2)
+```
+
+
